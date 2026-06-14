@@ -1,0 +1,33 @@
+# Secrets — NEVER commit these
+.env
+stripe-live-keys.txt
+stripe-backup-code.txt
+extension.pem
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Databases
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
