@@ -32,14 +32,16 @@ async function init() {
 }
 
 async function refreshUsage() {
-  try {
-    const res = await fetch(`${API_BASE}/usage/${userId}`);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    updateUsageBadge(data);
-  } catch {
-    usageText.textContent = "Sin conexión";
-  }
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({ action: "usage", userId }, res => {
+      if (chrome.runtime.lastError || !res || res.error) {
+        usageText.textContent = "Sin conexión";
+      } else {
+        updateUsageBadge(res);
+      }
+      resolve();
+    });
+  });
 }
 
 function updateUsageBadge(data) {
@@ -47,8 +49,9 @@ function updateUsageBadge(data) {
     usageText.textContent = "⚡ Pro — Ilimitado";
     proBanner.style.display = "none";
   } else {
-    const rem = data.remaining;
-    usageText.textContent = `${rem}/10 usos hoy`;
+    const rem  = typeof data.remaining === "number" ? data.remaining : 10;
+    const used = 10 - rem;
+    usageText.textContent = `${used}/10 usos hoy`;
     proBanner.style.display = rem === 0 ? "flex" : "none";
   }
 }
@@ -71,28 +74,31 @@ improveBtn.addEventListener("click", async () => {
   hideError();
   outputSection.style.display = "none";
 
-  try {
-    const response = await chrome.runtime.sendMessage({
-        action: "improve",
-        data: { user_id: userId, text: text, tone: selectedTone }
-    });
-    
-    if (response.error) {
+  chrome.runtime.sendMessage(
+    { action: "improve", data: { user_id: userId, text, tone: selectedTone, language: "es" } },
+    response => {
+      setLoading(false);
+
+      if (chrome.runtime.lastError || !response) {
+        showError("No se pudo conectar con ProWrite. Recarga la extensión.");
+        return;
+      }
+      if (response.error) {
         showError(response.error);
         return;
+      }
+
+      const data = response.data;
+      if (!data || !data.improved_text) {
+        showError("Respuesta inesperada del servidor. Inténtalo de nuevo.");
+        return;
+      }
+
+      outputText.textContent = data.improved_text;
+      outputSection.style.display = "flex";
+      updateUsageBadge(data);
     }
-    
-    const data = response.data;
-
-    outputText.textContent = data.improved_text;  
-    outputSection.style.display = "flex";
-    updateUsageBadge(data);
-
-  } catch (err) {
-    showError("No se pudo conectar al servidor. ¿Está el backend corriendo?");
-  } finally {
-    setLoading(false);
-  }
+  );
 });
 
 // ── Copiar resultado ───────────────────────────────────────────────────────
