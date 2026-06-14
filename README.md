@@ -2,14 +2,14 @@
 
 > Mejora cualquier texto con IA en segundos — extensión de Chrome + API en producción.
 
-ProWrite es una herramienta de mejora de texto impulsada por **Gemini AI**. Consta de un backend FastAPI desplegado en Render y una extensión de Chrome (v1) con popup integrado y soporte de pagos Pro vía Stripe.
+ProWrite es una herramienta de mejora de texto impulsada por **Gemini AI**. Consta de un backend FastAPI desplegado en Render y una extensión de Chrome con botón flotante, historial, 12 idiomas y soporte de pagos Pro vía Stripe.
 
 ---
 
 ## 🚀 Demo en producción
 
 - **API:** `https://prowrite-backend-ds5o.onrender.com`
-- **Extensión Chrome v2 (con botón flotante):** [prowrite-extension](https://github.com/IvanReichle/prowrite-extension)
+- **Extensión Chrome:** [prowrite-extension](https://github.com/IvanReichle/prowrite-extension)
 
 ---
 
@@ -20,14 +20,10 @@ prowrite/
 ├── backend/
 │   ├── main.py           # FastAPI — endpoints, Stripe webhooks, Gemini AI
 │   └── requirements.txt  # Dependencias Python
-├── extension/            # Extensión Chrome v1 (popup)
-│   ├── manifest.json
-│   ├── popup.html
-│   ├── popup.js
-│   ├── popup.css
-│   └── background.js
 └── vercel.json           # Configuración de deploy
 ```
+
+La extensión de Chrome está en su propio repositorio: **[IvanReichle/prowrite-extension](https://github.com/IvanReichle/prowrite-extension)**
 
 ---
 
@@ -141,15 +137,3 @@ uvicorn main:app --reload
 3. Build: `pip install -r backend/requirements.txt`
 4. Start: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 5. Añade las variables de entorno en el dashboard
-
----
-
-## 📦 Extensión Chrome v1
-
-La carpeta `extension/` contiene la versión 1 del popup. Para instalarla en Chrome:
-
-1. Abre `chrome://extensions/`
-2. Activa **Modo desarrollador**
-3. Clic en **Cargar sin empaquetar** → selecciona `extension/`
-
-> Para la versión completa con botón flotante en toda página, usa [prowrite-extension](https://github.com/IvanReichle/prowrite-extension).
